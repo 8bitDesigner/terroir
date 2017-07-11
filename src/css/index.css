@@ -9,13 +9,21 @@ body {
 
 .container {
   display: flex;
-  max-width: 1200px;
+  max-width: 1000px;
   padding: 50px;
   margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 25px;
+    flex-direction: column;
+  }
+}
+
 .control-panel {
   flex: 0 1 30%;
+  margin-bottom: 20px;
 }
 
 .control-panel--title {
