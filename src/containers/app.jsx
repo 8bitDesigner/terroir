@@ -6,25 +6,42 @@ import './app.css'
 export default class App extends Component {
   constructor (props) {
     super(props)
-    this.size = 33
+
+    this.state = {
+      size: 33,
+      steppable: false
+    }
   }
 
   componentWillMount () {
-    this.grid = new DiamondSquareGenerator(this.size)
-    this.reset()
+    this.grid = new DiamondSquareGenerator(this.state.size)
+    this.grid.reset()
+    this.run()
   }
 
   setSize (event) {
-    this.size = parseInt(event.target.value, 10)
-    this.grid.size = this.size
-    this.reset()
+    this.state.size = parseInt(event.target.value, 10)
+    this.grid.size = this.state.size
+    this.run()
+  }
+
+  run () {
+    this.grid.reset()
+    this.grid.run()
+    this.setState({rows: this.grid.rows})
+  }
+
+  step () {
+    this.grid.step()
+    this.setState({rows: this.grid.rows})
   }
 
   reset () {
     this.grid.reset()
-    this.grid.run()
-
-    this.setState({rows: this.grid.rows})
+    this.setState({
+      rows: this.grid.rows,
+      steppable: true
+    })
   }
 
   render () {
@@ -33,9 +50,9 @@ export default class App extends Component {
         <div className='control-panel'>
           <h1 className='control-panel--title'>Terroir</h1>
 
-          <div className='control-panel--control'>
+          <div className='control-panel--control control-panel--control-group'>
             <label>Grid size</label>
-            <select value={this.size} onChange={this.setSize.bind(this)}>
+            <select value={this.state.size} onChange={this.setSize.bind(this)}>
               <option value='3'>3</option>
               <option value='5'>5</option>
               <option value='8'>9</option>
@@ -46,7 +63,15 @@ export default class App extends Component {
             </select>
           </div>
 
-          <div className='control-panel--control'>
+          <div className='control-panel--control control-panel--control-group'>
+            <button
+              className='control-panel--step'
+              onClick={this.step.bind(this)}
+              disabled={!this.state.steppable}
+            >Step</button>
+
+            <button className='control-panel--run' onClick={this.run.bind(this)}>Run</button>
+
             <button className='control-panel--reset' onClick={this.reset.bind(this)}>Reset</button>
           </div>
         </div>
