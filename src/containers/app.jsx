@@ -6,23 +6,18 @@ import './app.css'
 export default class App extends Component {
   constructor (props) {
     super(props)
-    this.width = 30
+    this.size = 33
   }
 
   componentWillMount () {
-    this.grid = new DiamondSquareGenerator(this.width)
+    this.grid = new DiamondSquareGenerator(this.size)
     this.reset()
   }
 
-  setWidth (event) {
-    const value = parseInt(event.target.value, 10)
-
-    if (value < 101 && value > 9) {
-      this.grid.size = value
-      this.reset()
-    } else {
-      console.log('barf', value)
-    }
+  setSize (event) {
+    this.size = parseInt(event.target.value, 10)
+    this.grid.size = this.size
+    this.reset()
   }
 
   reset () {
@@ -40,7 +35,15 @@ export default class App extends Component {
 
           <div className='control-panel--control'>
             <label>Grid size</label>
-            <input type='number' min='10' max='100' step='10' value={this.grid.size} onChange={this.setWidth.bind(this)} />
+            <select value={this.size} onChange={this.setSize.bind(this)}>
+              <option value='3'>3</option>
+              <option value='5'>5</option>
+              <option value='8'>9</option>
+              <option value='17'>17</option>
+              <option value='33'>33</option>
+              <option value='65'>65</option>
+              <option value='129'>129</option>
+            </select>
           </div>
 
           <div className='control-panel--control'>
@@ -49,7 +52,7 @@ export default class App extends Component {
         </div>
 
         <div className='grid-container'>
-          <Grid width={100} height={100} rows={this.state.rows} />
+          <Grid rows={this.state.rows} />
         </div>
       </div>
     )
