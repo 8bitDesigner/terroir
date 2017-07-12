@@ -3,15 +3,13 @@ import Cell from '../components/cell'
 
 export default class Grid extends Component {
   render () {
+    const {cells, size} = this.props.grid
+
     return (
       <div className='grid'>
-        {this.props.rows.map((row, idx) => {
-          return (
-            <div className='grid-row' key={idx}>
-              {row.map((cell, idx) => <Cell value={cell} key={idx} rowWidth={row.length} />)}
-            </div>
-          )
-        })}
+        {cells.map((value, idx) =>
+          <Cell value={value} key={idx} rowWidth={size} terrainMapping={this.props.terrainMapping} />
+        )}
       </div>
     )
   }

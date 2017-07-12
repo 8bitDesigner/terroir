@@ -48,29 +48,35 @@ export default class Cell extends Component {
     }
   }
 
-  get color () {
-    switch (this.state.type) {
-      case 'SNOWY_MOUNTAIN': return 'lightgray'
-      case 'MOUNTAIN':       return 'slategrey'
-      case 'FOREST':         return 'green'
-      case 'GRASS':          return 'lawngreen'
-      case 'SAND':           return 'khaki'
-      case 'WATER':          return 'deepskyblue'
-      default:               return 'blue'
+  get bgColor () {
+    if (!this.props.terrainMapping) {
+      const v = this.props.value || 0
+      return `rgb(${v}, ${v}, ${v}`
+    } else {
+      switch (this.state.type) {
+        case 'SNOWY_MOUNTAIN': return 'lightgray'
+        case 'MOUNTAIN':       return 'slategrey'
+        case 'FOREST':         return 'green'
+        case 'GRASS':          return 'lawngreen'
+        case 'SAND':           return 'khaki'
+        case 'WATER':          return 'deepskyblue'
+        default:               return 'blue'
+      }
     }
   }
 
   render () {
-    const {label, color: textColor} = this.text
+    const {value, rowWidth, terrainMapping} = this.props
     const style = {
-      color: textColor,
-      background: this.color,
-      paddingBottom: `${100 / this.props.rowWidth}%`
+      color: this.text.color,
+      background: this.bgColor,
+      flexBasis: `${100 / rowWidth}%`,
+      paddingBottom: `${100 / rowWidth}%`
     }
 
     return (
-      <div className='grid-cell' style={style} data-value={this.props.value}>
-        <span className='grid-cell--label'>{label}</span>
+      <div className='grid-cell' style={style} data-value={value}>
+        <span className='grid-cell--label'>{terrainMapping ? this.text.label : ''}</span>
       </div>
     )
   }

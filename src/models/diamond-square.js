@@ -1,53 +1,36 @@
 /* eslint-disable no-multi-spaces */
+import AbstractGenerator from './base'
+
 const floor = Math.floor.bind(Math)
 const rand = Math.random.bind(Math)
 const sum = arr => arr.reduce((a, b) => a + b, 0)
 const avg = (...args) => sum(args) / args.length
 
-export default class Grid {
-  constructor (size, lowValue = 0, highValue = 255) {
-    this.size = size
+export default class DiamondSquareGenerator extends AbstractGenerator {
+  constructor (size, initialValue = 0, lowValue = 0, highValue = 255) {
+    super(size)
+
     this.lowValue = lowValue
     this.highValue = highValue
-
     this.reset()
   }
 
   reset () {
     const midValue = floor(avg(this.lowValue, this.highValue))
-    const first = 0
-    const last = this.size - 1
-
     this.queue = []
-    this.rows = []
 
-    for (let i = 0; i < this.size; i++) {
-      this.rows[i] = []
-      for (let j = 0; j < this.size; j++) {
-        this.rows[i][j] = null
-      }
-    }
-
-    this.setCell(first, first, midValue)
-    this.setCell(first, last, midValue)
-    this.setCell(last, first, midValue)
-    this.setCell(last, last, midValue)
+    this.set(0, 0, midValue)
+    this.set(0, this.last, midValue)
+    this.set(this.last, 0, midValue)
+    this.set(this.last, this.last, midValue)
 
     this.queue.push({
-      startX: first,
-      startY: first,
-      endX: last,
-      endY: last,
+      startX: 0,
+      startY: 0,
+      endX: this.last,
+      endY: this.last,
       baseHeight: midValue
     })
-  }
-
-  getCell (x, y) {
-    return this.rows[y][x]
-  }
-
-  setCell (x, y, v) {
-    this.rows[y][x] = v
   }
 
   step () {
@@ -65,18 +48,18 @@ export default class Grid {
     const noise = (rand() - 0.5) * baseHeight
 
     const centerPointValue = floor(avg(
-      this.getCell(left, top),
-      this.getCell(right, top),
-      this.getCell(left, bottom),
-      this.getCell(right, bottom)
+      this.get(left, top),
+      this.get(right, top),
+      this.get(left, bottom),
+      this.get(right, bottom)
     ) - (noise * 2))
 
-    this.setCell(xCenter, yCenter, centerPointValue)
+    this.set(xCenter, yCenter, centerPointValue)
 
-    this.setCell(xCenter, top,      floor(avg(this.getCell(left,  top),    this.getCell(right, top))    + noise))
-    this.setCell(xCenter, bottom,   floor(avg(this.getCell(left,  bottom), this.getCell(right, bottom)) + noise))
-    this.setCell(left,    yCenter,  floor(avg(this.getCell(left,  top),    this.getCell(left,  bottom)) + noise))
-    this.setCell(right,   yCenter,  floor(avg(this.getCell(right, top),    this.getCell(right, bottom)) + noise))
+    this.set(xCenter, top,      floor(avg(this.get(left,  top),    this.get(right, top))    + noise))
+    this.set(xCenter, bottom,   floor(avg(this.get(left,  bottom), this.get(right, bottom)) + noise))
+    this.set(left,    yCenter,  floor(avg(this.get(left,  top),    this.get(left,  bottom)) + noise))
+    this.set(right,   yCenter,  floor(avg(this.get(right, top),    this.get(right, bottom)) + noise))
 
     if ((right - left) > 2) {
       baseHeight = floor(baseHeight * Math.pow(2.0, -0.75))
