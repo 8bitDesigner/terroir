@@ -8,7 +8,7 @@ export default class App extends Component {
   constructor (props) {
     super(props)
 
-    const size = 3
+    const size = 6
     const generator = 'Midpoint Displacement'
     const generators = {
       'Midpoint Displacement': MidpointDisplacementGenerator,
@@ -45,6 +45,7 @@ export default class App extends Component {
     const name = event.target.value
     const Generator = this.state.generators[name]
     const grid = new Generator(this.state.size)
+    grid.run()
 
     this.setState({ generator: name, grid })
   }

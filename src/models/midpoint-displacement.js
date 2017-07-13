@@ -5,6 +5,8 @@ import { rand, avg, jitter, floor } from '../lib/rand-utils'
 export default class MidpointDisplacementGenerator extends AbstractGenerator {
   constructor (size, initialValue = 0, lowValue = 0, highValue = 255) {
     super(size)
+
+    this.erosion = -0.75
     this.lowValue = lowValue
     this.highValue = highValue
     this.reset()
@@ -35,7 +37,7 @@ export default class MidpointDisplacementGenerator extends AbstractGenerator {
     const cy = floor(avg(top, bottom))
     const displace = (...args) => floor(jitter(avg(...args), range))
 
-    this.set(cx, top,    displace(this.get(left, top),    this.get(right, top)))
+;   this.set(cx, top,    displace(this.get(left, top),    this.get(right, top)))
     this.set(right, cy,  displace(this.get(right, top),   this.get(right, bottom)))
     this.set(cx, bottom, displace(this.get(left, bottom), this.get(right, bottom)))
     this.set(left, cy,   displace(this.get(left, top),    this.get(left, bottom)))
@@ -50,7 +52,7 @@ export default class MidpointDisplacementGenerator extends AbstractGenerator {
     this.normalize()
 
     if ((right - left) > 2) {
-      range = floor(range * Math.pow(2.0, -0.75))
+      range = floor(range * Math.pow(2.0, this.erosion))
       this.queue.push(() => this.midpointDisplace(left, top, cx, cy, range))
       this.queue.push(() => this.midpointDisplace(cx, top, right, cy, range))
       this.queue.push(() => this.midpointDisplace(left, cy, cx, bottom, range))
