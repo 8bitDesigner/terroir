@@ -1,45 +1,61 @@
 /* eslint-disable no-multi-spaces */
 import AbstractGenerator from './base'
-
-const floor = Math.floor.bind(Math)
-const rand = Math.random.bind(Math)
-const sum = arr => arr.reduce((a, b) => a + b, 0)
-const avg = (...args) => sum(args) / args.length
+import { rand, avg, jitter, floor } from '../lib/rand-utils'
 
 export default class MidpointDisplacementGenerator extends AbstractGenerator {
-  constructor (size, initialValue = 0) {
+  constructor (size, initialValue = 0, lowValue = 0, highValue = 255) {
     super(size)
+    this.lowValue = lowValue
+    this.highValue = highValue
     this.reset()
   }
 
   reset () {
-    const midValue = floor(avg(this.lowValue, this.highValue))
+    const range = floor(avg(this.highValue, this.lowValue))
     this.queue = []
 
-    this.set(0, 0, midValue)
-    this.set(0, this.last, midValue)
-    this.set(this.last, 0, midValue)
-    this.set(this.last, this.last, midValue)
+    this.set(0, 0, floor(rand()))
+    this.set(0, this.last, floor(rand()))
+    this.set(this.last, 0, floor(rand()))
+    this.set(this.last, this.last, floor(rand()))
 
-    this.queue.push({
-      startX: 0,
-      startY: 0,
-      endX: this.last,
-      endY: this.last,
-      baseHeight: midValue
-    })
+    this.queue.push(() => this.midpointDisplace(0, 0, this.last, this.last, range))
   }
 
   step () {
-    const {startX, startY, endX, endY, baseHeight} = this.queue.shift()
-    this.midpointDisplace(startX, startY, endX, endY, baseHeight)
+    if (this.queue.length) { this.queue.shift()() }
   }
 
   run () {
     while (this.queue.length) { this.step() }
   }
 
-  midpointDisplace (left, top, right, bottom, baseHeight) {
+  midpointDisplace (left, top, right, bottom, range) {
+    const cx = floor(avg(left, right))
+    const cy = floor(avg(top, bottom))
+    const displace = (...args) => floor(jitter(avg(...args), range))
+
+    this.set(cx, top,    displace(this.get(left, top),    this.get(right, top)))
+    this.set(right, cy,  displace(this.get(right, top),   this.get(right, bottom)))
+    this.set(cx, bottom, displace(this.get(left, bottom), this.get(right, bottom)))
+    this.set(left, cy,   displace(this.get(left, top),    this.get(left, bottom)))
+
+    this.set(cx, cy, displace(
+      this.get(cx, top),
+      this.get(right, cy),
+      this.get(cx, bottom),
+      this.get(left, cy)
+    ))
+
+    this.normalize()
+
+    if ((right - left) > 2) {
+      range = floor(range * Math.pow(2.0, -0.75))
+      this.queue.push(() => this.midpointDisplace(left, top, cx, cy, range))
+      this.queue.push(() => this.midpointDisplace(cx, top, right, cy, range))
+      this.queue.push(() => this.midpointDisplace(left, cy, cx, bottom, range))
+      this.queue.push(() => this.midpointDisplace(cx, cy, right, bottom, range))
+    }
   }
 }
 

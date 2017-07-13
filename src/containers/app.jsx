@@ -8,18 +8,22 @@ export default class App extends Component {
   constructor (props) {
     super(props)
 
+    const size = 3
+    const generator = 'Midpoint Displacement'
+    const generators = {
+      'Midpoint Displacement': MidpointDisplacementGenerator,
+      'Diamond Square': DiamondSquareGenerator
+    }
+
     this.state = {
-      size: 5,
-      generators: {
-        'Midpoint Displacement': MidpointDisplacementGenerator,
-        'Diamond Square': DiamondSquareGenerator
-      },
-      generator: 'Diamond Square',
+      size,
+      generator,
+      generators,
+      grid: new generators[generator](size),
       steppable: false,
       terrainMapping: true
     }
 
-    this.state.grid = new this.state.generators[this.state.generator](this.state.size)
     this.state.grid.run()
   }
 
@@ -90,7 +94,7 @@ export default class App extends Component {
             </select>
           </div>
 
-          <div style={{display: 'none'}} className='control-panel--control control-panel--control-group'>
+          <div className='control-panel--control control-panel--control-group'>
             <label>Algorithm</label>
             <select value={this.state.generator} onChange={this.setGenerator.bind(this)}>
               {Object.keys(this.state.generators).map(key =>

@@ -26,6 +26,13 @@ export default class AbstractGenerator {
     }
   }
 
+  normalize () {
+    for (let i = 0; i < this.cells.length; i++) {
+      if (this.cells[i] > 255) { this.cells[i] = 255 }
+      if (this.cells[i] < 0) { this.cells[i] = 0 }
+    }
+  }
+
   reset () {
   }
 
