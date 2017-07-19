@@ -1,6 +1,6 @@
 /* eslint-disable no-multi-spaces */
 import AbstractGenerator from './base'
-import { floor, avg, jitter } from '../lib/rand-utils'
+import { rand, floor, avg, jitter } from '../lib/rand-utils'
 
 export default class DiamondSquareGenerator extends AbstractGenerator {
   constructor (size, initialValue = 0, lowValue = 0, highValue = 255) {
@@ -14,49 +14,61 @@ export default class DiamondSquareGenerator extends AbstractGenerator {
 
   reset () {
     const range = floor(avg(this.highValue, this.lowValue))
-    this.queue = []
+    const center = floor(avg(0, this.last))
 
-    this.set(0, 0, range)
-    this.set(0, this.last, range)
-    this.set(this.last, 0, range)
-    this.set(this.last, this.last, range)
+    super.reset()
 
-    this.queue.push(() => this.diamondSquare(0, 0, this.last, this.last, range))
+    this.set(0, 0, floor(rand()))
+    this.set(0, this.last, floor(rand()))
+    this.set(this.last, 0, floor(rand()))
+    this.set(this.last, this.last, floor(rand()))
+
+    this.diamondSquare(center, range)
   }
 
-  step () {
-    if (this.queue.length) { this.queue.shift()() }
-  }
-
-  run () {
-    while (this.queue.length) { this.step() }
-  }
-
-  diamondSquare (left, top, right, bottom, range) {
-    const cx = floor(avg(left, right))
-    const cy = floor(avg(top, bottom))
-    const displace = (...args) => floor(jitter(avg(...args), range))
-
-    this.set(cx, cy, displace(
-      this.get(left, top),
-      this.get(right, top),
-      this.get(right, bottom),
-      this.get(left, bottom)
-    ))
-
-    this.set(cx, top,    displace(this.get(left, top),    this.get(right, top)))
-    this.set(right, cy,  displace(this.get(right, top),   this.get(right, bottom)))
-    this.set(cx, bottom, displace(this.get(left, bottom), this.get(right, bottom)))
-    this.set(left, cy,   displace(this.get(left, top),    this.get(left, bottom)))
-
-    this.normalize()
-
-    if ((right - left) > 2) {
-      range = floor(range * Math.pow(2.0, this.erosion))
-      this.queue.push(() => this.diamondSquare(left, top, cx, cy, range))
-      this.queue.push(() => this.diamondSquare(cx, top, right, cy, range))
-      this.queue.push(() => this.diamondSquare(left, cy, cx, bottom, range))
-      this.queue.push(() => this.diamondSquare(cx, cy, right, bottom, range))
+  diamondSquare (radius, range) {
+    if (radius >= 1) {
+      this.queue.push(() => this.squares(radius, range))
+      this.queue.push(() => this.diamonds(radius, range))
+      this.diamondSquare(radius / 2, floor(range * Math.pow(2.0, this.erosion)))
+    } else {
+      this.normalize()
     }
+  }
+
+  squares (radius, range) {
+    const step = radius * 2
+    for (let x = radius; x < this.size; x += step) {
+      for (let y = radius; y < this.size; y += step) {
+        this.square(x, y, radius, range)
+      }
+    }
+  }
+
+  square (x, y, rdx, range) {
+    this.set(x, y, floor(jitter(avg(
+      this.get(x - rdx, y - rdx),
+      this.get(x - rdx, y + rdx),
+      this.get(x + rdx, y - rdx),
+      this.get(x + rdx, y + rdx)
+    ), range)))
+  }
+
+  diamonds (radius, range) {
+    for (let y = 0; y < this.size; y += radius) {
+      const shift = (y / radius % 2 === 0) ? radius : 0
+      for (let x = shift; x < this.size; x += radius * 2) {
+        this.diamond(x, y, radius, range)
+      }
+    }
+  }
+
+  diamond (x, y, rdx, range) {
+    this.set(x, y, floor(jitter(avg(
+      this.get(x - rdx, y),
+      this.get(x - rdx, y),
+      this.get(x, y - rdx),
+      this.get(x, y + rdx)
+    ), range)))
   }
 }

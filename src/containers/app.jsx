@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import DiamondSquareGenerator from '../models/diamond-square.js'
 import MidpointDisplacementGenerator from '../models/midpoint-displacement.js'
+import PerlinNoiseGenerator from '../models/perlin-noise.js'
 import Grid from '../components/grid'
 import './app.css'
 
@@ -9,10 +10,11 @@ export default class App extends Component {
     super(props)
 
     const size = 6
-    const generator = 'Midpoint Displacement'
+    const generator = 'Diamond Square'
     const generators = {
       'Midpoint Displacement': MidpointDisplacementGenerator,
-      'Diamond Square': DiamondSquareGenerator
+      'Diamond Square': DiamondSquareGenerator,
+      'Perlin Noise': PerlinNoiseGenerator
     }
 
     this.state = {
@@ -92,6 +94,7 @@ export default class App extends Component {
               <option value='4'>17x17</option>
               <option value='5'>33x33</option>
               <option value='6'>65x65</option>
+              <option value='7'>129x129</option>
             </select>
           </div>
 

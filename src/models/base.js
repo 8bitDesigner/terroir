@@ -34,11 +34,17 @@ export default class AbstractGenerator {
   }
 
   reset () {
+    this.queue = []
   }
 
   step () {
+    if (this.queue.length) {
+      this.queue.shift()()
+      this.normalize()
+    }
   }
 
   run () {
+    while (this.queue.length) { this.step() }
   }
 }
