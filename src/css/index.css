@@ -12,18 +12,18 @@ body {
   max-width: 1000px;
   padding: 50px;
   margin: 0 auto;
-  flex-flow: row wrap;
 }
 
 .control-panel {
   flex: 0 1 30%;
+  flex-flow: row wrap;
   margin: 0 20px 20px 0;
 }
 
 @media (max-width: 768px) {
   .container {
     padding: 25px;
-    flex-direction: column;
+    flex-flow: column wrap;
   }
 
   .control-panel {
@@ -40,20 +40,19 @@ body {
 }
 
 .control-panel--control input,
-.control-panel--control select {
+.control-panel--control select,
+.control-panel--control button {
   font-size: 18px;
   font-family: monospace;
 }
 
 .control-panel--control button {
-  font-family: monospace;
-  font-size: 18px;
   padding: 7px 15px;
 }
 
 .control-panel--control-group {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
 }
 
 .control-panel--control-group input,
@@ -61,10 +60,7 @@ body {
 .control-panel--control-group select,
 .control-panel--control-group label {
   flex: 1;
-}
-
-.grid-container {
-  flex: 1 1 70%;
+  margin: .25em;
 }
 
 .grid-container canvas {
