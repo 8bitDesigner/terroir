@@ -13,7 +13,7 @@ export default class PerlinNoiseGenerator extends AbstractGenerator {
 
   reset () {
     super.reset()
-    this.noise(100, 256, this.size - 1)
+    this.noise(100, 256, 6)
   }
 
   apply (scale, range) {

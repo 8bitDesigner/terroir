@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import DiamondSquareGenerator from '../models/diamond-square.js'
 import MidpointDisplacementGenerator from '../models/midpoint-displacement.js'
 import PerlinNoiseGenerator from '../models/perlin-noise.js'
+import PerlinOctaveGenerator from '../models/perlin-octaves.js'
 import Grid from '../components/grid'
 import './app.css'
 
@@ -9,12 +10,13 @@ export default class App extends Component {
   constructor (props) {
     super(props)
 
-    const size = 6
-    const generator = 'Diamond Square'
+    const size = 7
+    const generator = 'Perlin Noise'
     const generators = {
       'Midpoint Displacement': MidpointDisplacementGenerator,
       'Diamond Square': DiamondSquareGenerator,
-      'Perlin Noise': PerlinNoiseGenerator
+      'Perlin Noise': PerlinNoiseGenerator,
+      'Perlin Octaves': PerlinOctaveGenerator
     }
 
     this.state = {
@@ -23,7 +25,7 @@ export default class App extends Component {
       generators,
       grid: new generators[generator](size),
       steppable: false,
-      terrainMapping: true
+      terrainMapping: false
     }
 
     this.state.grid.run()

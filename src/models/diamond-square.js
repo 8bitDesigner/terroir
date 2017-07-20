@@ -6,7 +6,7 @@ export default class DiamondSquareGenerator extends AbstractGenerator {
   constructor (size, initialValue = 0, lowValue = 0, highValue = 255) {
     super(size)
 
-    this.erosion = -0.75
+    this.erosion = -0.65
     this.lowValue = lowValue
     this.highValue = highValue
     this.reset()
