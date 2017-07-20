@@ -12,6 +12,7 @@ body {
   max-width: 1000px;
   padding: 50px;
   margin: 0 auto;
+  flex-flow: row wrap;
 }
 
 .control-panel {
@@ -36,10 +37,6 @@ body {
 
 .control-panel--control {
   margin-bottom: 10px;
-}
-
-.control-panel--control label {
-  margin-right: 10px;
 }
 
 .control-panel--control input,
