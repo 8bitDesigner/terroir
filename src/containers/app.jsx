@@ -10,8 +10,8 @@ export default class App extends Component {
   constructor (props) {
     super(props)
 
-    const size = 7
-    const generator = 'Perlin Noise'
+    const size = 6
+    const generator = 'Diamond Square'
     const generators = {
       'Midpoint Displacement': MidpointDisplacementGenerator,
       'Diamond Square': DiamondSquareGenerator,
@@ -25,7 +25,7 @@ export default class App extends Component {
       generators,
       grid: new generators[generator](size),
       steppable: false,
-      terrainMapping: false
+      terrainMapping: true
     }
 
     this.state.grid.run()
