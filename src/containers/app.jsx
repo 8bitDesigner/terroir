@@ -4,13 +4,12 @@ import MidpointDisplacementGenerator from '../models/midpoint-displacement.js'
 import PerlinNoiseGenerator from '../models/perlin-noise.js'
 import PerlinOctaveGenerator from '../models/perlin-octaves.js'
 import Grid from '../components/grid'
-import './app.css'
 
 export default class App extends Component {
   constructor (props) {
     super(props)
 
-    const size = 6
+    const size = 5
     const generator = 'Diamond Square'
     const generators = {
       'Midpoint Displacement': MidpointDisplacementGenerator,
