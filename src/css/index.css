@@ -9,24 +9,22 @@ body {
 
 .container {
   display: flex;
-  max-width: 1000px;
-  padding: 50px;
   margin: 0 auto;
 }
 
 .control-panel {
   flex: 0 1 30%;
   flex-flow: row wrap;
-  margin: 0 20px 20px 0;
+  padding: 50px;
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 25px;
     flex-flow: column wrap;
   }
 
   .control-panel {
+    padding: 20px;
     margin-right: 0;
   }
 }
@@ -63,6 +61,11 @@ body {
   margin: .25em;
 }
 
+.grid-container {
+  width: 100%;
+}
+
 .grid-container canvas {
+  image-rendering: pixelated;
   width: 100%;
 }

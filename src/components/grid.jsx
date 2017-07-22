@@ -77,7 +77,7 @@ export default class Grid extends Component {
       ctx.fillStyle = text.color
       ctx.textAlign = 'center'
       ctx.font = `${textSize}px monospace`
-      ctx.fillText(text.label, x + (size / 2), y + (size * 0.9))
+      ctx.fillText(text.label, x + (size / 2), y + (size * 0.8))
     }
   }
 
@@ -85,7 +85,6 @@ export default class Grid extends Component {
     const {x, y, size} = cell
     ctx.strokeStyle = ctx.fillStyle = this.bgColorFor(cell)
     ctx.fillRect(x, y, size, size)
-    ctx.strokeRect(x, y, size, size)
   }
 
   draw () {
@@ -113,7 +112,19 @@ export default class Grid extends Component {
   }
 
   render () {
-    return <canvas width='686' height='686' ref='canvas' />
+    // Find a size for our canvas so we can render terrain tiles on int
+    // boundaries, and then scale the canvas in CSS for fine-grained control
+    const size = {
+      3: 654, // x 218
+      5: 650, // x 130
+      9: 657, // x 73
+      17: 663, // x 39
+      33: 660, // x 20
+      65: 650, // x 10
+      129: 645 // x 3
+    }[this.props.grid.size]
+
+    return <canvas width={size} height={size} ref='canvas' />
   }
 }
 
