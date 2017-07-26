@@ -28,9 +28,9 @@ export default class Grid extends Component {
       return types.MOUNTAIN
     } else if (value <= 169 && value > 137) {
       return types.FOREST
-    } else if (value <= 137 && value > 100) {
+    } else if (value <= 137 && value > 90) {
       return types.GRASS
-    } else if (value <= 100 && value > 63) {
+    } else if (value <= 90 && value > 63) {
       return types.SAND
     } else if (value <= 63 && value > 26) {
       return types.WATER
@@ -83,12 +83,30 @@ export default class Grid extends Component {
 
   drawBg (ctx, cell) {
     const {x, y, size} = cell
-    ctx.strokeStyle = ctx.fillStyle = this.bgColorFor(cell)
+    ctx.fillStyle = this.bgColorFor(cell)
     ctx.fillRect(x, y, size, size)
+  }
+
+  drawFeature (ctx, cell, feature) {
+    if (!feature) { return }
+
+    const {x, y, size} = cell
+    const tile =
+      feature === 'city' ? {symbol: '🏘', color: 'white'}
+    : feature === 'lair' ? {symbol: '🗻', color: 'black'}
+    : null
+
+    if (tile) {
+      ctx.fillStyle = tile.color
+      ctx.textAlign = 'center'
+      ctx.font = `${size}px monospace`
+      ctx.fillText(tile.symbol, x + (size / 2), y + (size))
+    }
   }
 
   draw () {
     const ctx = this.refs.canvas.getContext('2d')
+    const features = this.props.features
     const gridSize = this.props.grid.size
     const cellSize = this.refs.canvas.width / gridSize
     const toCell = (value, idx) => {
@@ -97,6 +115,7 @@ export default class Grid extends Component {
         value,
         type,
         text: this.textFor(type),
+        features: [features[idx]],
         x: (idx % gridSize) * cellSize,
         y: Math.floor(idx / gridSize) * cellSize,
         size: cellSize
@@ -108,10 +127,15 @@ export default class Grid extends Component {
     .forEach(cell => {
       this.drawBg(ctx, cell)
       this.drawText(ctx, cell)
+      cell.features.forEach(feature => {
+        this.drawFeature(ctx, cell, feature)
+      })
     })
   }
 
   render () {
+    const {grid, features, children} = this.props
+
     // Find a size for our canvas so we can render terrain tiles on int
     // boundaries, and then scale the canvas in CSS for fine-grained control
     const size = {
@@ -122,8 +146,10 @@ export default class Grid extends Component {
       33: 660, // x 20
       65: 650, // x 10
       129: 645 // x 3
-    }[this.props.grid.size]
+    }[grid.size]
 
+    console.log(features.filter(n => n))
+    children.forEach(feature => feature(grid))
     return <canvas width={size} height={size} ref='canvas' />
   }
 }

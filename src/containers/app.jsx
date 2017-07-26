@@ -1,16 +1,18 @@
+/* eslint-disable no-return-assign */
 import React, { Component } from 'react'
 import DiamondSquareGenerator from '../models/diamond-square.js'
 import MidpointDisplacementGenerator from '../models/midpoint-displacement.js'
 import PerlinNoiseGenerator from '../models/perlin-noise.js'
 import PerlinOctaveGenerator from '../models/perlin-octaves.js'
 import Grid from '../components/grid'
+import {City, Lair} from '../components/features.js'
 
 export default class App extends Component {
   constructor (props) {
     super(props)
 
     const size = 5
-    const generator = 'Diamond Square'
+    const generator = 'Perlin Noise'
     const generators = {
       'Midpoint Displacement': MidpointDisplacementGenerator,
       'Diamond Square': DiamondSquareGenerator,
@@ -18,11 +20,15 @@ export default class App extends Component {
       'Perlin Octaves': PerlinOctaveGenerator
     }
 
+    const grid = new generators[generator](size)
+    const features = this.getFeatures(grid)
+
     this.state = {
       size,
       generator,
       generators,
-      grid: new generators[generator](size),
+      features,
+      grid,
       steppable: false,
       terrainMapping: true
     }
@@ -35,8 +41,9 @@ export default class App extends Component {
     const Generator = this.state.generators[this.state.generator]
     const grid = new Generator(size)
     grid.run()
+    const features = this.getFeatures(grid)
 
-    this.setState({ size, grid, steppable: false })
+    this.setState({ size, grid, features, steppable: false })
   }
 
   setTerrainMap (event) {
@@ -50,20 +57,56 @@ export default class App extends Component {
     const grid = new Generator(this.state.size)
     grid.run()
 
-    this.setState({ generator: name, grid })
+    const features = this.getFeatures(grid)
+    this.setState({ generator: name, grid, features })
   }
 
   run () {
     const Generator = this.state.generators[this.state.generator]
     let grid = this.state.grid
+    let features
+
     if (grid.queue.length) {
       grid.run()
     } else {
       grid = new Generator(this.state.size)
       grid.run()
+      features = this.getFeatures(grid)
     }
 
-    this.setState({grid, steppable: false})
+    this.setState({grid, features, steppable: false})
+  }
+
+  getFeatures (grid = this.state.grid) {
+    const terrain = grid.cells
+    const features = new Array(grid.size * grid.size)
+    const set = (x, y, v, arr) => arr[y * grid.size + x] = v
+
+    features.fill(0)
+
+    const sample = n => arr => {
+      const lookup = () => arr[Math.floor(Math.random() * arr.length)]
+      const found = []
+
+      for (let i = 0; i < n; i++) {
+        found.push(lookup())
+      }
+
+      return found
+    }
+
+    const valid = terrain.map((v, idx) => ({
+      x: idx % grid.size,
+      y: Math.floor(idx / grid.size),
+      v
+    }))
+    .filter(cell => cell.v < 169 && cell.v > 63)
+
+    sample(2)(valid).forEach(cell => set(cell.x, cell.y, 'city', features))
+    sample(1)(valid).forEach(cell => set(cell.x, cell.y, 'lair', features))
+
+    console.log(sample(2)(valid), features.length)
+    return features
   }
 
   step () {
@@ -127,7 +170,10 @@ export default class App extends Component {
         </div>
 
         <div className='grid-container'>
-          <Grid grid={this.state.grid} terrainMapping={this.state.terrainMapping} />
+          <Grid grid={this.state.grid} features={this.state.features} terrainMapping={this.state.terrainMapping}>
+            {Lair(2)}
+            {City(1)}
+          </Grid>
         </div>
       </div>
     )
