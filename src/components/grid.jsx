@@ -88,7 +88,7 @@ export default class Grid extends Component {
   }
 
   drawFeature (ctx, cell, feature) {
-    if (!feature) { return }
+    if (!feature || !this.props.terrainMapping) { return }
 
     const {x, y, size} = cell
     const tile =
@@ -134,7 +134,7 @@ export default class Grid extends Component {
   }
 
   render () {
-    const {grid, features, children} = this.props
+    const {grid, features} = this.props
 
     // Find a size for our canvas so we can render terrain tiles on int
     // boundaries, and then scale the canvas in CSS for fine-grained control
@@ -149,7 +149,6 @@ export default class Grid extends Component {
     }[grid.size]
 
     console.log(features.filter(n => n))
-    children.forEach(feature => feature(grid))
     return <canvas width={size} height={size} ref='canvas' />
   }
 }
