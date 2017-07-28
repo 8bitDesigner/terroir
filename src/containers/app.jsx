@@ -1,10 +1,23 @@
 /* eslint-disable no-return-assign */
 import React, { Component } from 'react'
-import {generators} from '../reducers/index'
+import {generators} from '../reducers/map-generation'
 import {connect} from 'react-redux'
 import Grid from '../components/grid'
 
 class App extends Component {
+  constructor (...args) {
+    super(...args)
+    this.handler = e => this.props.dispatch({type: 'KEYDOWN', event: e})
+  }
+
+  componentDidMount () {
+    window.addEventListener('keydown', this.handler)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('keydown', this.handler)
+  }
+
   setSize (event) {
     const size = parseInt(event.target.value, 10)
     this.props.dispatch({type: 'SET_SIZE', size})
@@ -25,7 +38,7 @@ class App extends Component {
   }
 
   render () {
-    const {size, Generator, terrainMapping, grid, features} = this.props
+    const { Generator, size, terrainMapping } = this.props
     const currentGenerator = Object.keys(generators).find(key => {
       return generators[key] === Generator
     })
@@ -68,7 +81,7 @@ class App extends Component {
         </div>
 
         <div className='grid-container'>
-          <Grid grid={grid} features={features} terrainMapping={terrainMapping} />
+          <Grid {...this.props} />
         </div>
       </div>
     )

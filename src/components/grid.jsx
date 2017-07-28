@@ -104,10 +104,30 @@ export default class Grid extends Component {
     }
   }
 
+  drawAvatar (ctx, size, {x, y}) {
+    x = (x * size) + (size / 2)
+    y = (y * size) + (size * 0.8)
+
+    ctx.textAlign = 'center'
+    ctx.fillStyle = 'white'
+    ctx.font = `${size}px monospace`
+    ctx.fillText('@', x, y)
+  }
+
+  drawDragon (ctx, size, {x, y}) {
+    x = (x * size) + (size / 2)
+    y = (y * size) + (size * 0.8)
+
+    ctx.textAlign = 'center'
+    ctx.fillStyle = 'red'
+    ctx.font = `${size}px monospace`
+    ctx.fillText('D', x, y)
+  }
+
   draw () {
     const ctx = this.refs.canvas.getContext('2d')
-    const features = this.props.features
-    const gridSize = this.props.grid.size
+    const {avatar, dragon, features, grid} = this.props
+    const gridSize = grid.size
     const cellSize = this.refs.canvas.width / gridSize
     const toCell = (value, idx) => {
       const type = this.toType(value)
@@ -131,10 +151,13 @@ export default class Grid extends Component {
         this.drawFeature(ctx, cell, feature)
       })
     })
+
+    this.drawAvatar(ctx, cellSize, avatar)
+    this.drawDragon(ctx, cellSize, dragon)
   }
 
   render () {
-    const {grid, features} = this.props
+    const {grid} = this.props
 
     // Find a size for our canvas so we can render terrain tiles on int
     // boundaries, and then scale the canvas in CSS for fine-grained control
@@ -148,7 +171,6 @@ export default class Grid extends Component {
       129: 645 // x 3
     }[grid.size]
 
-    console.log(features.filter(n => n))
     return <canvas width={size} height={size} ref='canvas' />
   }
 }
